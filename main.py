@@ -1,5 +1,5 @@
-import numpy as np
 from tqdm import tqdm
+import os
 
 import torch
 from transformers import DistilBertTokenizer
@@ -40,9 +40,10 @@ def build_loaders(tokenizer, mode):
     )
     return dataloader
 
-def train_epoch(model, train_loader, optimizer, lr_scheduler, step):
+def train_epoch(model, train_loader, optimizer, lr_scheduler, step, epoch):
     loss_meter = AvgMeter()
     tqdm_object = tqdm(train_loader, total=len(train_loader))
+    count = 0
     for batch in tqdm_object:
         batch = {k: v.to(CFG.device) for k, v in batch.items() if k != "caption"}
         loss = model(batch)
@@ -56,6 +57,11 @@ def train_epoch(model, train_loader, optimizer, lr_scheduler, step):
         loss_meter.update(loss.item(), count)
 
         tqdm_object.set_postfix(train_loss=loss_meter.avg, lr=get_lr(optimizer))
+        steps_so_far = count * CFG.batch_size
+        if CFG.save_every > 0 and steps_so_far % CFG.save_every == 0:
+            if not os.path.isdir('checkpoints'):
+                os.mkdir('checkpoints')
+            torch.save(model.state_dict(), f'checkpoints/epoch={epoch}-steps={steps_so_far}.pt')
     return loss_meter
 
 
@@ -75,6 +81,8 @@ def valid_epoch(model, valid_loader):
 
 
 def main():
+    if CFG.save_every > 0:
+        assert CFG.save_every % CFG.batch_size == 0, f'Batch size should be a divider of the save_every flag'
     print('Loading tokenizer', flush=True)
     tokenizer = DistilBertTokenizer.from_pretrained(CFG.text_tokenizer)
     print('Loading datasets', flush=True)
@@ -95,7 +103,7 @@ def main():
     for epoch in range(CFG.epochs):
         print(f"Epoch: {epoch + 1}")
         model.train()
-        train_loss = train_epoch(model, train_loader, optimizer, lr_scheduler, step)
+        train_loss = train_epoch(model, train_loader, optimizer, lr_scheduler, step, epoch)
         model.eval()
         with torch.no_grad():
             valid_loss = valid_epoch(model, valid_loader)
