@@ -24,7 +24,7 @@ def build_loaders(tokenizer, mode):
     captions = []
     for sample in samples:
         for caption_data in sample['sentences']:
-            image_paths.append(f'/cs/labs/oabend/uriber/datasets/COCO/{sample["filepath"]}/{sample["filename"]}')
+            image_paths.append(f'{sample["filepath"]}/{sample["filename"]}')
             captions.append(caption_data['raw'])
     dataset = CLIPDataset(
         image_paths,

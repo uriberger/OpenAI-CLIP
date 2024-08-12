@@ -1,7 +1,7 @@
 import torch
 
 debug = True
-image_path = "C:/Moein/AI/Datasets/Flicker-8k/Images"
+image_path = "/cs/labs/oabend/uriber/datasets/COCO"
 captions_path = "C:/Moein/AI/Datasets/Flicker-8k"
 batch_size = 8
 num_workers = 0
