@@ -10,7 +10,7 @@ from CLIP import CLIPModel
 from utils import AvgMeter, get_lr
 import json
 
-def build_loaders(tokenizer, mode):
+def build_loaders(tokenizer, mode, batch_size=CFG.batch_size):
     transforms = get_transforms(mode=mode)
     with open('../CLIP_prefix_caption/dataset_coco.json', 'r') as fp:
         data = json.load(fp)['images']
@@ -36,7 +36,7 @@ def build_loaders(tokenizer, mode):
     )
     dataloader = torch.utils.data.DataLoader(
         dataset,
-        batch_size=CFG.batch_size,
+        batch_size=batch_size,
         num_workers=CFG.num_workers,
         shuffle=True if mode == "train" else False,
     )
