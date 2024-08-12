@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 
 import torch
@@ -11,21 +10,7 @@ from CLIP import CLIPModel
 from utils import AvgMeter, get_lr
 import json
 
-def make_train_valid_dfs():
-    dataframe = pd.read_csv(f"{CFG.captions_path}/captions.csv")
-    max_id = dataframe["id"].max() + 1 if not CFG.debug else 100
-    image_ids = np.arange(0, max_id)
-    np.random.seed(42)
-    valid_ids = np.random.choice(
-        image_ids, size=int(0.2 * len(image_ids)), replace=False
-    )
-    train_ids = [id_ for id_ in image_ids if id_ not in valid_ids]
-    train_dataframe = dataframe[dataframe["id"].isin(train_ids)].reset_index(drop=True)
-    valid_dataframe = dataframe[dataframe["id"].isin(valid_ids)].reset_index(drop=True)
-    return train_dataframe, valid_dataframe
-
-
-def build_loaders(dataframe, tokenizer, mode):
+def build_loaders(tokenizer, mode):
     transforms = get_transforms(mode=mode)
     with open('../CLIP_prefix_caption/dataset_coco.json', 'r') as fp:
         data = json.load(fp)['images']
@@ -90,11 +75,13 @@ def valid_epoch(model, valid_loader):
 
 
 def main():
-    # train_df, valid_df = make_train_valid_dfs()
+    print('Loading tokenizer', flush=True)
     tokenizer = DistilBertTokenizer.from_pretrained(CFG.text_tokenizer)
+    print('Loading datasets', flush=True)
     train_loader = build_loaders(tokenizer, mode="train")
     valid_loader = build_loaders(tokenizer, mode="valid")
 
+    print('Loading model', flush=True)
     model = CLIPModel().to(CFG.device)
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=CFG.lr, weight_decay=CFG.weight_decay
