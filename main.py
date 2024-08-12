@@ -63,6 +63,7 @@ def train_epoch(model, train_loader, optimizer, lr_scheduler, step, epoch, outpu
             if not os.path.isdir(checkpoints_dir):
                 os.mkdir(checkpoints_dir)
             torch.save(model.state_dict(), f'{checkpoints_dir}/epoch={epoch}-steps={steps_so_far}.pt')
+        count += 1
     return loss_meter
 
 
