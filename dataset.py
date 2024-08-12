@@ -1,7 +1,8 @@
-import os
+import numpy as np
 import cv2
 import torch
 import albumentations as A
+import random
 
 import config as CFG
 
@@ -27,7 +28,12 @@ class CLIPDataset(torch.utils.data.Dataset):
             for key, values in self.encoded_captions.items()
         }
 
-        image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[idx]}")
+        if CFG.random_images:
+            image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[random.choice(len(self.image_filenames))]}")
+        else:
+            image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[idx]}")
+        if CFG.noise_images:
+            image = np.random.rand(*(image.shape))*255
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = self.transforms(image=image)['image']
         item['image'] = torch.tensor(image).permute(2, 0, 1).float()
