@@ -1,18 +1,15 @@
-import os
-import gc
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 import torch
-from torch import nn
 from transformers import DistilBertTokenizer
 
 import config as CFG
 from dataset import CLIPDataset, get_transforms
 from CLIP import CLIPModel
 from utils import AvgMeter, get_lr
-
+import json
 
 def make_train_valid_dfs():
     dataframe = pd.read_csv(f"{CFG.captions_path}/captions.csv")
@@ -30,9 +27,23 @@ def make_train_valid_dfs():
 
 def build_loaders(dataframe, tokenizer, mode):
     transforms = get_transforms(mode=mode)
+    with open('../CLIP_prefix_caption/dataset_coco.json', 'r') as fp:
+        data = json.load(fp)['images']
+    if mode == 'train':
+        samples = [x for x in data if x['split'] in ['train', 'restval']]
+    elif mode == 'valid':
+        samples = [x for x in data if x['split'] == 'val']
+    else:
+        assert False
+    image_paths = []
+    captions = []
+    for sample in samples:
+        for caption_data in sample['sentences']:
+            image_paths.append(f'/cs/labs/oabend/uriber/datasets/COCO/{sample["filepath"]}/{sample["filename"]}')
+            captions.append(caption_data['raw'])
     dataset = CLIPDataset(
-        dataframe["image"].values,
-        dataframe["caption"].values,
+        image_paths,
+        captions,
         tokenizer=tokenizer,
         transforms=transforms,
     )
@@ -43,7 +54,6 @@ def build_loaders(dataframe, tokenizer, mode):
         shuffle=True if mode == "train" else False,
     )
     return dataloader
-
 
 def train_epoch(model, train_loader, optimizer, lr_scheduler, step):
     loss_meter = AvgMeter()
@@ -80,11 +90,10 @@ def valid_epoch(model, valid_loader):
 
 
 def main():
-    train_df, valid_df = make_train_valid_dfs()
+    # train_df, valid_df = make_train_valid_dfs()
     tokenizer = DistilBertTokenizer.from_pretrained(CFG.text_tokenizer)
-    train_loader = build_loaders(train_df, tokenizer, mode="train")
-    valid_loader = build_loaders(valid_df, tokenizer, mode="valid")
-
+    train_loader = build_loaders(tokenizer, mode="train")
+    valid_loader = build_loaders(tokenizer, mode="valid")
 
     model = CLIPModel().to(CFG.device)
     optimizer = torch.optim.AdamW(
