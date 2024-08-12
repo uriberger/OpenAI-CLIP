@@ -11,7 +11,7 @@ class ImageEncoder(nn.Module):
     """
 
     def __init__(
-        self, model_name=CFG.model_name, pretrained=CFG.pretrained, trainable=CFG.trainable
+        self, model_name=CFG.model_name, pretrained=CFG.image_encoder_pretrained, trainable=CFG.trainable
     ):
         super().__init__()
         self.model = timm.create_model(
@@ -25,7 +25,7 @@ class ImageEncoder(nn.Module):
 
 
 class TextEncoder(nn.Module):
-    def __init__(self, model_name=CFG.text_encoder_model, pretrained=CFG.pretrained, trainable=CFG.trainable):
+    def __init__(self, model_name=CFG.text_encoder_model, pretrained=CFG.text_encoder_pretrained, trainable=CFG.trainable):
         super().__init__()
         if pretrained:
             self.model = DistilBertModel.from_pretrained(model_name)

@@ -19,8 +19,9 @@ text_embedding = 768
 text_tokenizer = "distilbert-base-uncased"
 max_length = 200
 
-pretrained = False # for both image encoder and text encoder
-trainable = False # for both image encoder and text encoder
+image_encoder_pretrained = False
+text_encoder_pretrained = False
+trainable = True # for both image encoder and text encoder
 temperature = 1.0
 
 # image size
