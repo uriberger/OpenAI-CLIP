@@ -24,7 +24,8 @@ max_length = 200
 
 image_encoder_pretrained = False
 text_encoder_pretrained = False
-trainable = True # for both image encoder and text encoder
+image_encoder_trainable = True
+text_encoder_trainable = True
 temperature = 1.0
 
 # image size
