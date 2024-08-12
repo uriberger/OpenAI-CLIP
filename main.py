@@ -89,7 +89,7 @@ def main():
         assert CFG.save_every % CFG.batch_size == 0, f'Batch size should be a divider of the save_every flag'
     
     image_pretrained_str = '_image_pretrained' if CFG.image_encoder_pretrained else ''
-    text_pretrained_str = '_image_pretrained' if CFG.text_encoder_pretrained else ''
+    text_pretrained_str = '_text_pretrained' if CFG.text_encoder_pretrained else ''
     noise_images_str = '_noise_images' if CFG.noise_images else ''
     random_images_str = '_random_images' if CFG.random_images else ''
     output_dir = f'output{image_pretrained_str}{text_pretrained_str}{noise_images_str}{random_images_str}'
