@@ -12,6 +12,8 @@ factor = 0.5
 epochs = 5
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 save_every = 10000
+noise_images = False
+random_images = False
 
 model_name = 'resnet50'
 image_embedding = 2048
