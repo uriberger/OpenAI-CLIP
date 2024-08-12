@@ -47,7 +47,7 @@ def train_epoch(model, train_loader, optimizer, lr_scheduler, step, epoch, outpu
     tqdm_object = tqdm(train_loader, total=len(train_loader))
     batch_count = 0
     for batch in tqdm_object:
-        batch = {k: v.to(CFG.device) for k, v in batch.items() if k != "caption"}
+        batch = {k: v.to(CFG.device) for k, v in batch.items() if k not in ["caption", "image_path"]}
         loss = model(batch)
         optimizer.zero_grad()
         loss.backward()
