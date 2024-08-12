@@ -32,6 +32,7 @@ class CLIPDataset(torch.utils.data.Dataset):
         image = self.transforms(image=image)['image']
         item['image'] = torch.tensor(image).permute(2, 0, 1).float()
         item['caption'] = self.captions[idx]
+        item['image_path'] = self.image_filenames[idx]
 
         return item
 

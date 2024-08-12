@@ -18,6 +18,8 @@ def build_loaders(tokenizer, mode):
         samples = [x for x in data if x['split'] in ['train', 'restval']]
     elif mode == 'valid':
         samples = [x for x in data if x['split'] == 'val']
+    elif mode == 'test':
+        samples = [x for x in data if x['split'] == 'test']
     else:
         assert False
     image_paths = []
