@@ -43,7 +43,7 @@ def build_loaders(tokenizer, mode):
 def train_epoch(model, train_loader, optimizer, lr_scheduler, step, epoch, output_dir):
     loss_meter = AvgMeter()
     tqdm_object = tqdm(train_loader, total=len(train_loader))
-    count = 0
+    batch_count = 0
     for batch in tqdm_object:
         batch = {k: v.to(CFG.device) for k, v in batch.items() if k != "caption"}
         loss = model(batch)
@@ -57,13 +57,13 @@ def train_epoch(model, train_loader, optimizer, lr_scheduler, step, epoch, outpu
         loss_meter.update(loss.item(), count)
 
         tqdm_object.set_postfix(train_loss=loss_meter.avg, lr=get_lr(optimizer))
-        steps_so_far = count * CFG.batch_size
+        steps_so_far = batch_count * CFG.batch_size
         if CFG.save_every > 0 and steps_so_far % CFG.save_every == 0:
             checkpoints_dir = os.path.join(output_dir, 'checkpoints')
             if not os.path.isdir(checkpoints_dir):
                 os.mkdir(checkpoints_dir)
             torch.save(model.state_dict(), f'{checkpoints_dir}/epoch={epoch}-steps={steps_so_far}.pt')
-        count += 1
+        batch_count += 1
     return loss_meter
 
 
