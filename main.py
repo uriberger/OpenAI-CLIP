@@ -75,7 +75,7 @@ def valid_epoch(model, valid_loader):
 
     tqdm_object = tqdm(valid_loader, total=len(valid_loader))
     for batch in tqdm_object:
-        batch = {k: v.to(CFG.device) for k, v in batch.items() if k != "caption"}
+        batch = {k: v.to(CFG.device) for k, v in batch.items() if k not in ["caption", "image_path"]}
         loss = model(batch)
 
         count = batch["image"].size(0)
