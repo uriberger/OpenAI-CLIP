@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import os
+import shutil
 
 import torch
 from transformers import DistilBertTokenizer
@@ -94,7 +95,7 @@ def main():
     random_images_str = '_random_images' if CFG.random_images else ''
     output_dir = f'output{image_pretrained_str}{text_pretrained_str}{noise_images_str}{random_images_str}'
     if os.path.isdir(output_dir):
-        os.rmdir(output_dir)
+        shutil.rmtree(output_dir)
     os.mkdir(output_dir)
 
     print('Loading tokenizer', flush=True)
