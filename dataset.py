@@ -33,7 +33,7 @@ class CLIPDataset(torch.utils.data.Dataset):
         else:
             image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[idx]}")
         if CFG.noise_images:
-            image = np.random.rand(*(image.shape))*255
+            image = (np.random.rand(*(image.shape))*255).astype(np.uint8)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = self.transforms(image=image)['image']
         item['image'] = torch.tensor(image).permute(2, 0, 1).float()
