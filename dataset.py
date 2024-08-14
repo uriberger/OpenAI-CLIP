@@ -29,7 +29,7 @@ class CLIPDataset(torch.utils.data.Dataset):
         }
 
         if CFG.random_images:
-            image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[random.choice(len(self.image_filenames))]}")
+            image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[random.choice(range(len(self.image_filenames)))]}")
         else:
             image = cv2.imread(f"{CFG.image_path}/{self.image_filenames[idx]}")
         if CFG.noise_images:
